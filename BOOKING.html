@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="BOOKING.css">
+    <link rel="stylesheet" type="text/css" href="BOOKING.js">
+    <video autoplay muted loop id="background-video">
+        <source src="bg8.mp4" type="video/mp4">
+    </video>
+    <header>
+        <h1>WELCOME TO PRIMS BARBERSHOP!!</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="BOOKING.html">BOOKING</a></li>
+                 <li><a href="katalog.html">CATALOG</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <title>Booking Barbershop</title>
+</head>
+<body>
+    <div class="card">
+        <h2>Booking Barbershop</h2>
+        <form id="booking-form">
+            <div class="form-group">
+                <label for="name">Nama:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="service">Layanan:</label>
+                <select id="service" name="service" required>
+                    <option value="Haircut">Potong Rambut</option>
+                    <option value="Shave">Cukur</option>
+                    <option value="Beard Trim">Perawatan Jenggot</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="date">Tanggal:</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Booking">
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <div class="output">
+            <h3>Antrian:</h3>
+            <div id="queue-container"></div>
+            <button id="download-btn" style="display: none;">Download</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 PRIMS Barbershop. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const form = document.getElementById("booking-form");
+        const queueContainer = document.getElementById("queue-container");
+        const downloadBtn = document.getElementById("download-btn");
+        let queue = [];
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const service = document.getElementById("service").value;
+            const date = document.getElementById("date").value;
+
+            const booking = {
+                name: name,
+                email: email,
+                service: service,
+                date: date
+            };
+
+            queue.push(booking);
+
+            displayQueue();
+            downloadBtn.style.display = "block";
+
+            // Clear the form inputs
+            form.reset();
+        });
+
+        downloadBtn.addEventListener("click", function() {
+            const queueText = generateQueueText();
+            const textFile = new Blob([queueText], { type: "text/plain" });
+            const fileName = "booking_queue.txt";
+            const downloadLink = document.createElement("a");
+            downloadLink.download = fileName;
+            downloadLink.href = window.URL.createObjectURL(textFile);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        });
+
+        function displayQueue() {
+            queueContainer.innerHTML = "";
+
+            for (let i = 0; i < queue.length; i++) {
+                const booking = queue[i];
+                const output = `
+                    <div class="queue-item">
+                        <h4>Antrian ${i + 1}</h4>
+                        <p>Nama: ${booking.name}</p>
+                        <p>Email: ${booking.email}</p>
+                        <p>Layanan: ${booking.service}</p>
+                        <p>Tanggal: ${booking.date}</p>
+                    </div>
+                `;
+                queueContainer.innerHTML += output;
+            }
+        }
+
+        function generateQueueText() {
+            let queueText = "Antrian Booking Barbershop:\n\n";
+
+            for (let i = 0; i < queue.length; i++) {
+                const booking = queue[i];
+                queueText += `Antrian ${i + 1}:\n`;
+                queueText += `Nama: ${booking.name}\n`;
+                queueText += `Email: ${booking.email}\n`;
+                queueText += `Layanan: ${booking.service}\n`;
+                queueText += `Tanggal: ${booking.date}\n\n`;
+            }
+
+            return queueText;
+        }
+    </script>
+</body>
+</html>
